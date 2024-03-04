@@ -1,0 +1,112 @@
+--Sa se afiseze numele preparatelor cat si lungimea descrierii acestora
+SELECT P.NUME_PREPARAT,
+       NVL(DECODE(P.DESCRIERE_PREPARAT, NULL, 'Fara descriere', LENGTH(P.DESCRIERE_PREPARAT)), 0) AS LUNGIME_DESCRIERE
+FROM PREPARAT P;
+--Sa se afiseze Staff-ul restaurantului cu locatie pe Bvd Lacul Tei si care au luat primul salariu in Octombrie 2022(salariul se primeste pe 31 Oct)
+
+SELECT sr.ID_ANGAJAT
+FROM STAFF_RESTAURANT sr
+WHERE sr.id_angajat IN(
+    SELECT a.ID_ANGAJAT 
+    FROM ANGAJATI a
+    JOIN RESTAURANT r ON r.id_restaurant=a.id_restaurant
+    WHERE LAST_DAY(a.data_angajat)='31-OCT-2022' AND r.locatie_restaurant='Bulevardul Lacul Tei'
+   
+);
+---- Sa se obtina numele angajatului,telefonul si prefixul acestuia,data angajatului si categoria de salariu( Salariu mic < 5000 < Salariu Mediu <6000< Salariu mare )
+
+SELECT NUME_ANGAJAT, TELEFON_ANGAJAT,
+    SUBSTR(TELEFON_ANGAJAT, 1, 3) AS PREFIX_TELEFON,
+    TO_CHAR(DATA_ANGAJAT, 'YYYY-MM-DD') AS DATA_ANGAJARE_FORMATATA,
+    CASE
+        WHEN SALARIU_ANGAJAT < 5000 THEN 'Salariu mic'
+        WHEN SALARIU_ANGAJAT BETWEEN 5000 AND 6000 THEN 'Salariu mediu'
+        ELSE 'Salariu mare'
+    END AS CATEGORIE_SALARIU
+FROM ANGAJATI;
+--Sa se afiseze media platilor a clientilor care au facut rezervari
+SELECT co.ID_CLIENT,AVG(p.SUMA_TOTALA) AS MEDIE_PLATA
+FROM (
+    SELECT  ID_COMANDA,ID_CLIENT
+    FROM COMANDA
+) co
+JOIN CLIENT c ON c.ID_CLIENT = co.ID_CLIENT
+JOIN REZERVARI r ON r.ID_CLIENT = c.ID_CLIENT 
+JOIN PLATA p ON co.ID_COMANDA = p.ID_COMANDA
+GROUP BY co.ID_CLIENT
+ORDER BY MEDIE_PLATA;
+
+--Sa se afiseze restaurantele care au totalul salariilor >21.000
+WITH
+  val_restaurant AS (
+    select NUME_RESTAURANT, sum(SALARIU_ANGAJAT) as total 
+    from RESTAURANT r, ANGAJATI a
+    where r.ID_RESTAURANT =a.ID_RESTAURANT
+    group by NUME_RESTAURANT
+  )
+SELECT *
+FROM val_restaurant
+WHERE total>21000;
+--
+--
+
+--
+--
+--Aceasta interogare sterge platile facute de clientii cu id-ul mai mare de 1010.
+
+DELETE FROM PLATA
+WHERE ID_COMANDA IN (SELECT ID_COMANDA FROM COMANDA WHERE ID_CLIENT IN(SELECT ID_CLIENT FROM CLIENT WHERE ID_CLIENT > 1010));
+
+ROLLBACK;
+--Aceasta interogare actualizeaza salariul chefilor care lucreaza la restaurantele de la Japanos Tineretului, inmultind salariul existent cu 1.1. 
+
+UPDATE ANGAJATI 
+SET SALARIU_ANGAJAT = SALARIU_ANGAJAT * 1.1 
+WHERE ID_RESTAURANT IN (SELECT ID_RESTAURANT FROM RESTAURANT WHERE NUME_RESTAURANT = 'Japanos Tineretului')
+AND ID_ANGAJAT IN(SELECT ID_ANGAJAT FROM CHEF ); 
+
+--Actualizarea salariului tuturor angajatilor din Japanos Takeaway  la 2000: 
+
+UPDATE ANGAJATI 
+SET SALARIU_ANGAJAT = 2000 
+WHERE ID_RESTAURANT = (SELECT ID_RESTAURANT FROM RESTAURANT WHERE NUME_RESTAURANT = 'Japanos Takeaway'); 
+
+-- 
+--
+
+--
+--
+
+--Sa se afiseze id-ul platii,id-ul comenzii, suma totala si numele clientului pentru cele mai mari 10 note de plata.
+select *
+from (select p.id_plata,p.id_comanda,p.suma_totala,cl.nume_client
+      from PLATA p 
+      join COMANDA c on c.id_comanda=p.id_comanda
+      join CLIENT cl on cl.id_client=c.id_client
+      order by p.suma_totala desc) t
+where rownum<=10;
+
+--Sa se afiseze preparatele(nume+descriere+numele ingredientului principal)  prezente in comenzile cu valoarea notei de plata>130,descrescator in functie de suma totala.
+SELECT p.nume_preparat,p.descriere_preparat,i.nume_ingredient,c.id_comanda,pl.suma_totala
+FROM INGREDIENTE i
+LEFT OUTER JOIN PREPARAT p ON  p.id_ingredient_principal=i.id_ingredient
+LEFT OUTER JOIN MENIU m ON m.id_preparat=p.id_preparat
+LEFT OUTER JOIN ITEM_COMANDA ic ON ic.id_item_meniu=m.id_item_meniu
+LEFT OUTER JOIN COMANDA c ON c.id_comanda=ic.id_comanda
+LEFT OUTER JOIN PLATA pl ON pl.id_comanda=c.id_comanda
+WHERE pl.suma_totala>130
+ORDER BY pl.suma_totala DESC;
+
+--Sa se afiseze numele clienților care au plasat comenzi pentru toate rezervările existente.
+SELECT c.NUME_CLIENT
+FROM CLIENT c
+WHERE NOT EXISTS (
+    SELECT r.ID_REZERVARE
+    FROM REZERVARI r
+    WHERE NOT EXISTS (
+        SELECT co.ID_COMANDA
+        FROM COMANDA co
+        WHERE co.ID_CLIENT= r.ID_CLIENT
+        AND co.ID_CLIENT = c.ID_CLIENT
+    )
+);

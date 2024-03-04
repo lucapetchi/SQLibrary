@@ -1,0 +1,405 @@
+--CREEARE TABELE--
+
+create TABLE  RESTAURANT(
+ID_RESTAURANT int not null primary key,
+NUME_RESTAURANT varchar2(50),
+LOCATIE_RESTAURANT varchar2(50)
+);
+
+create TABLE ANGAJATI(
+ID_ANGAJAT int not null primary key,
+NUME_ANGAJAT varchar2(50),
+SALARIU_ANGAJAT int ,
+DATA_ANGAJAT date,
+TELEFON_ANGAJAT varchar2(10),
+ID_RESTAURANT not null,
+foreign key(ID_RESTAURANT) references RESTAURANT(ID_RESTAURANT)
+);
+create TABLE STAFF_RESTAURANT(
+ID_STAFFR int not null primary key,
+ID_ANGAJAT not null,
+LUNI_EXPERIENTA int,
+foreign key(ID_ANGAJAT) references ANGAJATI(ID_ANGAJAT)
+);
+create TABLE CHEF(
+ID_CHEF int not null primary key,
+ID_ANGAJAT not null,
+SPECIALIZARE varchar2(20),
+foreign key(ID_ANGAJAT) references ANGAJATI(ID_ANGAJAT)
+);
+
+create TABLE CLIENTI(
+ID_CLIENT int not null primary key,
+NUME_CLIENT varchar2(50),
+EMAIL_CLIENT varchar2(50)
+);
+
+create TABLE REZERVARI(
+ID_REZERVARE int not null primary key,
+ID_CLIENT not null,
+DATA_REZERVARE date,
+NR_CLIENTI int,
+foreign key(ID_CLIENT) references CLIENT(ID_CLIENT)
+);
+
+create TABLE COMANDA(
+ID_COMANDA int not null primary key,
+ID_CLIENT not null,
+ID_STAFFR not null,
+foreign key(ID_CLIENT) references CLIENT(ID_CLIENT),
+foreign key(ID_STAFFR) references STAFF_RESTAURANT(ID_STAFFR)
+);
+
+create TABLE PREPARAT(
+ID_PREPARAT int not null primary key,
+NUME_PREPARAT varchar2(20),
+DESCRIERE_PREPARAT varchar2(200)
+PRET int,
+
+
+);
+
+
+create TABLE INGREDIENTE(
+ID_INGREDIENT int not null primary key,
+NUME_INGREDIENT varchar2(50),
+Cantitate int,
+foreign key(ID_COMANDA) references COMANDA(ID_COMANDA)
+);
+
+
+create TABLE PLATA(
+ID_PLATA int not null primary key,
+ID_COMANDA not null,
+SUMA_TOTALA decimal,
+DATA_PLATA date,
+foreign key(ID_COMANDA)references COMANDA(ID_COMANDA)
+);
+
+create TABLE CURIER(
+ID_CURIER int not  null primary key,
+ID_ANGAJAT not null,
+NR_MASINA int,
+foreign key(ID_ANGAJAT)references ANGAJATI(ID_ANGAJAT)
+);
+
+create TABLE LIVRARE(
+ID_LIVRARE int not null primary key,
+ID_COMANDA not null,
+ID_CURIER not null,
+foreign key(ID_COMANDA) references COMANDA(ID_COMANDA),
+foreign key(ID_CURIER) references CURIER(ID_CURIER)
+);
+
+create TABLE  ITEM_COMANDA(
+ID_ITEM int not null primary key,
+CANTITATE int,
+ID_PREPARAT not null,
+ID_COMANDA not null,
+foreign key(ID_PREPARAT) references PREPARAT(ID_PREPARAT),
+foreign key(ID_COMANDA) references COMANDA(ID_COMANDA)
+);
+Create TABLE PREPARARE( 
+
+ID_PREPARAT  not null, 
+
+ID_INGREDIENT  not null, 
+
+Foreign key(ID_PREPARAT) references PREPARAT(ID_PREPARAT), 
+
+Foreign key(ID_INGREDIENT) references INGREDIENT(ID_INGREDIENT) 
+
+); 
+
+
+--INSERARE--
+SELECT * FROM RESTAURANT;
+
+insert into RESTAURANT VALUES(1,'Japanos Fusion','Soseaua Nordului');
+insert into RESTAURANT VALUES(2,'Japanos by the Lake','Parcul Herastrau');
+insert into RESTAURANT VALUES(3,'Japanos Tineretului','Bvd. Dimitrie Cantemir');
+insert into RESTAURANT VALUES(4,'Japanos Takeaway','Bulevardul Lacul Tei');
+insert into RESTAURANT VALUES(5,'Japanos Dorobanti','Strada George Calinescu');
+
+SELECT * FROM ANGAJATI;
+
+insert into ANGAJATI VALUES(111,'Popescu Radu',4400,to_date('01/03/2022','dd/mm/yyyy'),'0721020282',1);
+insert into ANGAJATI VALUES(112,'Antonescu Mihai',5000,to_date('02/05/2021','dd/mm/yyyy'),'0724040502',2);
+insert into ANGAJATI VALUES(113,'Andrei Stefan Catalin',5500,to_date('10/07/2020','dd/mm/yyyy'),'0732028213',3);
+insert into ANGAJATI VALUES(114,'Nastea Calin',4400,to_date('01/10/2022','dd/mm/yyyy'),'0743209876',4);
+insert into ANGAJATI VALUES(115,'Georgescu Maria',4400,to_date('25/05/2022','dd/mm/yyyy'),'0721384821',5);
+insert into ANGAJATI VALUES(116,'Ionescu Ana',6000,to_date('14/03/2017','dd/mm/yyyy'),'0755338212',1);
+insert into ANGAJATI VALUES(117,'Nedelcu Ana',5000,to_date('20/04/2020','dd/mm/yyyy'),'0722308202',2);
+insert into ANGAJATI VALUES(118,'Ionita Alexandru',5000,to_date('14/12/2021','dd/mm/yyyy'),'0723458922',3);
+insert into ANGAJATI VALUES(119,'Oprea Laurentiu',5000,to_date('01/06/2021','dd/mm/yyyy'),'0744994421',4);
+insert into ANGAJATI VALUES(120,'Voinea Alexandru',6000,to_date('12/03/2019','dd/mm/yyyy'),'0721982394',5);
+insert into ANGAJATI VALUES(121,'Ceausu Florina',7500,to_date('04/06/2016','dd/mm/yyyy'),'0721992182',1);
+insert into ANGAJATI VALUES(122,'Velcea Maria',5500,to_date('05/02/2020','dd/mm/yyyy'),'0723402345',1);
+insert into ANGAJATI VALUES(123,'Ammari Abdul',7500,to_date('06/10/2015','dd/mm/yyyy'),'0723449942',2);
+insert into ANGAJATI VALUES(124,'Dumitru Tudor',4400,to_date('20/09/2022','dd/mm/yyyy'),'0728992314',3);
+insert into ANGAJATI VALUES(125,'Spataru Vlad',5000,to_date('10/07/2021','dd/mm/yyyy'),'0788991234',4);
+insert into ANGAJATI VALUES(126,'Dumitru Vlad',5000,to_date('15/05/2021','dd/mm/yyyy'),'0799124422',5);
+insert into ANGAJATI VALUES(127,'Draghici Rares',5500,to_date('23/09/2021','dd/mm/yyyy'),'0723934412',1);
+insert into ANGAJATI VALUES(128,'West Kanye',4400,to_date('21/07/2021','dd/mm/yyyy'),'0721349821',2);
+insert into ANGAJATI VALUES(129,'Dragomir Stefania',6000,to_date('13/05/2020','dd/mm/yyyy'),'0788239124',3);
+insert into ANGAJATI VALUES(130,'Iliescu Ionut',5000,to_date('04/07/2021','dd/mm/yyyy'),'0728445503',4);
+insert into ANGAJATI VALUES(131,'Turcu Denisa',5500,to_date('01/04/2021','dd/mm/yyyy'),'0723557705',5);
+
+SELECT * FROM CLIENT;
+
+insert into CLIENT(ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Ion Dan','iondan@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Oprea Ion','oprion@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Letea Radu','letear@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT) 
+VALUES(seq_id_client.NEXTVAL,'Dobrin Letitia','dobr@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Camelia Carmen','carmeliac@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Rosoiu Luca','lucarosoiu@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT) 
+VALUES(seq_id_client.NEXTVAL,'Florea Andrei','floreandr@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Pintilie Ana','anapintilie@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Mihail Alexandra','alexandramihail@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT) 
+VALUES(seq_id_client.NEXTVAL,'Omar Ismail ','ismailomul@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Bisoc Alina','alinab@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Pene Florin','peneflorin@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Nitu Miruna','mirunadent@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Popovici David','davidpopovici@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Anghel Luminita','luminitaanghel@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Traistariu Mihai','mihaitraistariu@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Dumitrescu Bogdan','bogdand@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Dumitrascu Maria','mariadum@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT) 
+VALUES(seq_id_client.NEXTVAL,'Pavel Alina','pavelalina@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Ionescu Roxana','roxanaione@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT) 
+VALUES(seq_id_client.NEXTVAL,'Ionescu Mihai','ionescumihai@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Panait Razvan','panaitrazvan@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT) 
+VALUES(seq_id_client.NEXTVAL,'Stoian Radu','stoianradu@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT)
+VALUES(seq_id_client.NEXTVAL,'Mihail Roxana','miharox@gmail.com');
+insert into CLIENT (ID_CLIENT,NUME_CLIENT,EMAIL_CLIENT) 
+VALUES(seq_id_client.NEXTVAL,'Ivan Mihai','csgod@gmail.com');
+
+SELECT * FROM STAFF_RESTAURANT;
+
+insert into STAFF_RESTAURANT VALUES(501,114,7);
+insert into STAFF_RESTAURANT VALUES(502,111,14);
+insert into STAFF_RESTAURANT VALUES(503,117,25);
+insert into STAFF_RESTAURANT VALUES(504,128,22);
+insert into STAFF_RESTAURANT VALUES(505,125,20);
+insert into STAFF_RESTAURANT VALUES(506,131,25);
+
+SELECT * FROM COMANDA;
+
+insert into COMANDA VALUES(10,1004,501);
+insert into COMANDA VALUES(11,1001,501);
+insert into COMANDA VALUES(12,1010,502);
+insert into COMANDA VALUES(13,1012,502);
+insert into COMANDA VALUES(14,1014,503);
+insert into COMANDA VALUES(15,1013,503);
+insert into COMANDA VALUES(16,1001,503);
+insert into COMANDA VALUES(17,1009,503);
+insert into COMANDA VALUES(18,1008,503);
+insert into COMANDA VALUES(19,1006,504);
+insert into COMANDA VALUES(20,1013,504);
+insert into COMANDA VALUES(21,1015,505);
+insert into COMANDA VALUES(22,1020,506);
+insert into COMANDA VALUES(23,1021,503);
+insert into COMANDA VALUES(24,1022,505);
+insert into COMANDA VALUES(25,1023,503);
+insert into COMANDA VALUES(26,1024,501);
+insert into COMANDA VALUES(27,1025,503);
+insert into COMANDA VALUES(28,1001,501);
+insert into COMANDA VALUES(29,1001,505);
+insert into COMANDA VALUES(30,1001,505);
+insert into COMANDA VALUES(31,1001,506);
+
+SELECT * FROM CHEF;
+
+insert into CHEF VALUES(701,120,'Sushi');
+insert into CHEF VALUES(702,121,'Sushi');
+insert into CHEF VALUES(703,123,'Sushi');
+insert into CHEF VALUES(704,116,'Ramen');
+insert into CHEF VALUES(705,112,'Ramen');
+insert into CHEF VALUES(706,119,'Ramen');
+insert into CHEF VALUES(707,113,'Dessert');
+insert into CHEF VALUES(708,118,'Dessert');
+insert into CHEF VALUES(709,127,'Sushi');
+insert into CHEF VALUES(710,130,'Ramen');
+
+SELECT * FROM INGREDIENTE;
+
+insert into INGREDIENTE VALUES(801,'Ton',90);
+insert into INGREDIENTE VALUES(802,'Somon',55);
+insert into INGREDIENTE VALUES(803,'Orez',231);
+insert into INGREDIENTE VALUES(804,'Sos Soia',30);
+insert into INGREDIENTE VALUES(805,'Creveti',40);
+insert into INGREDIENTE VALUES(806,'Wasabi',70);
+insert into INGREDIENTE VALUES(807,'Crab',220);
+insert into INGREDIENTE VALUES(808,'Ciuperci',300);
+insert into INGREDIENTE VALUES(809,'Pasta Miso',120);
+insert into INGREDIENTE VALUES(810,'Porc',50);
+insert into INGREDIENTE VALUES(811,'Avocado',80);
+insert into INGREDIENTE VALUES(812,'Castravete',90);
+
+
+SELECT * FROM PREPARAT;
+
+
+insert into PREPARAT VALUES(901,'Nigiri Ton','File de ton pe un pat de orez presat ',801);
+insert into PREPARAT VALUES(902,'Nigiri Somon','File de somon pe un pat de orez presat ',802);
+insert into PREPARAT VALUES(903,'Maki Ton','Rulou Maki clasic cu ton',801);
+insert into PREPARAT VALUES(904,'Maki Somon','Rulou Maki clasic cu somon',802);
+insert into PREPARAT VALUES(905,'Maki Avocado','Rulou Maki clasic cu avocado',811);
+insert into PREPARAT VALUES(906,'Maki Spicy Somon','Rulou Maki clasic somon cu sosul spicy Japanos',802);
+insert into PREPARAT VALUES(907,'Maki California','Rulou Maki care contine crab,avocado , castravete si seminte de susan',807);
+insert into PREPARAT VALUES(908,'Maki Philadelphia','Rulou Maki care contine somon, cream cheese si castravete',802);
+insert into PREPARAT VALUES(909,'Ramen Veggie','Ramen vegetarian pe baza de ciuperci shiitake',808);
+insert into PREPARAT VALUES(910,'Ramen Porc','Ramenul clasic, construit in jurul porcului in stil chashu ',810);
+insert into PREPARAT VALUES(911,'Supa Miso','Supa traditionala japoneza, ingredientul principal fiind pasta miso',809);
+insert into PREPARAT VALUES(912,'Mochi','Prajitura japoneza facuta din orez',803);
+
+UPDATE PREPARAT SET PRET = 20 WHERE ID_PREPARAT=901;
+UPDATE PREPARAT SET PRET = 21 WHERE ID_PREPARAT=902;
+UPDATE PREPARAT SET PRET = 25 WHERE ID_PREPARAT=903;
+UPDATE PREPARAT SET PRET = 30 WHERE ID_PREPARAT=904;
+UPDATE PREPARAT SET PRET = 20 WHERE ID_PREPARAT=905;
+UPDATE PREPARAT SET PRET = 30 WHERE ID_PREPARAT=906;
+UPDATE PREPARAT SET PRET = 30 WHERE ID_PREPARAT=907;
+UPDATE PREPARAT SET PRET = 30 WHERE ID_PREPARAT=908;
+UPDATE PREPARAT SET PRET = 25 WHERE ID_PREPARAT=909;
+UPDATE PREPARAT SET PRET = 25 WHERE ID_PREPARAT=910;
+UPDATE PREPARAT SET PRET = 20 WHERE ID_PREPARAT=911;
+UPDATE PREPARAT SET PRET = 12 WHERE ID_PREPARAT=912;
+
+
+
+SELECT * FROM CURIER;
+
+insert into CURIER VALUES(1501,115,111);
+insert into CURIER VALUES(1502,122,222);
+insert into CURIER VALUES(1503,124,333);
+insert into CURIER VALUES(1504,126,444);
+insert into CURIER VALUES(1505,129,555);
+
+SELECT * FROM ITEM_COMANDA;
+
+insert into ITEM_COMANDA VALUES(651,1,901,10);
+insert into ITEM_COMANDA VALUES(652,2,905,11);
+insert into ITEM_COMANDA VALUES(653,4,903,12);
+insert into ITEM_COMANDA VALUES(654,3,906,13);
+insert into ITEM_COMANDA VALUES(655,1,907,14);
+insert into ITEM_COMANDA VALUES(656,1,910,15);
+insert into ITEM_COMANDA VALUES(657,2,910,16);
+insert into ITEM_COMANDA VALUES(658,2,903,17);
+insert into ITEM_COMANDA VALUES(659,1,901,18);
+insert into ITEM_COMANDA VALUES(660,3,902,19);
+insert into ITEM_COMANDA VALUES(661,4,904,20);
+insert into ITEM_COMANDA VALUES(662,5,905,21);
+insert into ITEM_COMANDA VALUES(663,6,912,22);
+insert into ITEM_COMANDA VALUES(664,2,911,13);
+insert into ITEM_COMANDA VALUES(665,3,906,14);
+insert into ITEM_COMANDA VALUES(666,4,908,13);
+insert into ITEM_COMANDA VALUES(667,1,909,16);
+insert into ITEM_COMANDA VALUES(668,2,903,17);
+insert into ITEM_COMANDA VALUES(669,1,902,18);
+insert into ITEM_COMANDA VALUES(670,1,906,13);
+insert into ITEM_COMANDA VALUES(671,3,909,14);
+
+
+SELECT * FROM PLATA;
+
+insert into PLATA VALUES(350,10,48,to_date('10/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(351,11,50,to_date('08/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(352,12,80,to_date('19/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(353,13,33,to_date('18/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(354,14,166,to_date('16/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(355,15,35,to_date('18/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(356,16,61,to_date('19/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(357,17,118,to_date('18/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(358,18,141,to_date('16/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(359,19,25,to_date('17/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(360,20,60,to_date('20/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(361,21,32,to_date('21/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(362,22,20,to_date('22/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(363,23,210,to_date('02/01/2022','dd/mm/yyyy'));
+insert into PLATA VALUES(364,24,42,to_date('17/05/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(365,25,60,to_date('23/06/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(366,26,22,to_date('23/04/2023','dd/mm/yyyy'));
+insert into PLATA VALUES(367,27,80,to_date('20/04/2021','dd/mm/yyyy'));
+
+
+SELECT * FROM REZERVARI;
+
+insert into REZERVARI VALUES(6001,1001,to_date('10/05/2023','dd/mm/yyyy'),3);
+insert into REZERVARI VALUES(6002,1002,to_date('08/05/2023','dd/mm/yyyy'),2);
+insert into REZERVARI VALUES(6003,1003,to_date('19/05/2023','dd/mm/yyyy'),4);
+insert into REZERVARI VALUES(6004,1004,to_date('18/05/2023','dd/mm/yyyy'),2);
+insert into REZERVARI VALUES(6005,1005,to_date('16/05/2023','dd/mm/yyyy'),2);
+insert into REZERVARI VALUES(6006,1006,to_date('18/05/2023','dd/mm/yyyy'),2);
+insert into REZERVARI VALUES(6007,1007,to_date('19/05/2023','dd/mm/yyyy'),3);
+insert into REZERVARI VALUES(6008,1008,to_date('18/05/2023','dd/mm/yyyy'),5);
+insert into REZERVARI VALUES(6009,1009,to_date('16/05/2023','dd/mm/yyyy'),2);
+insert into REZERVARI VALUES(6010,1010,to_date('17/05/2023','dd/mm/yyyy'),3);
+insert into REZERVARI VALUES(6011,1020,to_date('17/05/2023','dd/mm/yyyy'),3);
+
+
+
+
+SELECT * FROM LIVRARE;
+
+insert into LIVRARE VALUES(2301,23,1501);
+insert into LIVRARE VALUES(2302,24,1502);
+insert into LIVRARE VALUES(2303,25,1503);
+insert into LIVRARE VALUES(2304,26,1504);
+insert into LIVRARE VALUES(2305,27,1505);
+
+Insert into PREPARARE VALUES(901,802); 
+
+Insert into PREPARARE VALUES(902,809); 
+
+Insert into PREPARARE VALUES(903,808); 
+
+Insert into PREPARARE VALUES(904,804); 
+
+Insert into PREPARARE VALUES(905,801); 
+
+Insert into PREPARARE VALUES(906,801); 
+
+Insert into PREPARARE VALUES(907,803); 
+
+Insert into PREPARARE VALUES(908,803); 
+
+Insert into PREPARARE VALUES(909,806); 
+
+Insert into PREPARARE VALUES(910,807); 
+
+Insert into PREPARARE VALUES(911,802); 
+
+Insert into PREPARARE VALUES(912,802); 
+
+Insert into PREPARARE VALUES(901,803); 
+
+Insert into PREPARARE VALUES(901,803); 
+
+Insert into PREPARARE VALUES(901,804); 
+
+Insert into PREPARARE VALUES(901,805); 
